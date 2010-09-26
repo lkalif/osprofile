@@ -524,8 +524,8 @@ function avatar_properties_request($method_name, $params, $app_data)
 
     $uuid           = $req['avatar_id'];
 
-    $result = mysql_query("SELECT profileURL FROM opensim.users WHERE ".
-            "UUID = '". mysql_escape_string($uuid) ."'");
+    $result = mysql_query("SELECT profileURL FROM userprofile WHERE ".
+            "useruuid = '". mysql_escape_string($uuid) ."'");
 
     while (($row = mysql_fetch_assoc($result)))
     {
