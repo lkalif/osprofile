@@ -14,6 +14,8 @@ mysql_select_db ($DB_NAME);
 
 ###################### No user serviceable parts below #####################
 
+$zeroUUID = "00000000-0000-0000-0000-000000000000";
+
 #
 # The XMLRPC server object
 #
@@ -49,8 +51,7 @@ function avatarclassifiedsrequest($method_name, $params, $app_data)
     }
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
+        'success' => True,
         'data' => $data
     ));
 
@@ -64,6 +65,8 @@ xmlrpc_server_register_method($xmlrpc_server, "classified_update",
 
 function classified_update($method_name, $params, $app_data)
 {
+    global $zeroUUID;
+
     $req            = $params[0];
 
     $classifieduuid = $req['classifiedUUID'];
@@ -96,19 +99,13 @@ function classified_update($method_name, $params, $app_data)
         // I do it here
 
         if($parcelname == "")
-        {
             $parcelname = "Unknown";
-        }
 
         if($parceluuid == "")
-        {
-            $parceluuid = "00000000-0000-0000-0000-0000000000000";
-        }
+            $parceluuid = $zeroUUID;
 
         if($description == "")
-        {
             $description = "No Description";
-        }
 
         if($classifiedflag == 2)
         {
@@ -147,8 +144,7 @@ function classified_update($method_name, $params, $app_data)
     }
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
+        'success' => True,
         'data' => $data
     ));
 
@@ -164,14 +160,13 @@ function classified_delete($method_name, $params, $app_data)
 {
     $req            = $params[0];
 
-    $classifieduuid     = $req['classifiedID'];
+    $classifieduuid = $req['classifiedID'];
 
     $result = mysql_query("DELETE FROM classifieds WHERE ".
             "classifieduuid = '".mysql_escape_string($classifieduuid) ."'");
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
+        'success' => True,
         'data' => $data
     ));
 
@@ -196,6 +191,8 @@ function avatarpicksrequest($method_name, $params, $app_data)
     $result = mysql_query("SELECT * FROM userpicks WHERE ".
             "creatoruuid = '". mysql_escape_string($uuid) ."'");
 
+    $data = array();
+
     while (($row = mysql_fetch_assoc($result)))
     {
         $data[] = array(
@@ -204,8 +201,7 @@ function avatarpicksrequest($method_name, $params, $app_data)
     }
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
+        'success' => True,
         'data' => $data
     ));
 
@@ -228,12 +224,13 @@ function pickinforequest($method_name, $params, $app_data)
             "creatoruuid = '". mysql_escape_string($uuid) ."' AND ".
             "pickuuid = '". mysql_escape_string($pick) ."'");
 
-    while (($row = mysql_fetch_assoc($result)))
+    $data = array();
+
+    $row = mysql_fetch_assoc($result);
+    if ($row != FALSE)
     {
         if ($row["description"] == "")
-        {
             $row["description"] = "No description given";
-        }
 
         $data[] = array(
                 "pickuuid" => $row["pickuuid"],
@@ -252,8 +249,7 @@ function pickinforequest($method_name, $params, $app_data)
     }
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
+        'success' => True,
         'data' => $data
     ));
 
@@ -267,6 +263,8 @@ xmlrpc_server_register_method($xmlrpc_server, "picks_update",
 
 function picks_update($method_name, $params, $app_data)
 {
+    global $zeroUUID;
+
     $req            = $params[0];
 
     $pickuuid       = $req['pick_id'];
@@ -287,36 +285,25 @@ function picks_update($method_name, $params, $app_data)
     $check = mysql_query("SELECT COUNT(*) FROM userpicks WHERE ".
             "pickuuid = '". mysql_escape_string($pickuuid) ."'");
 
-    while ($row = mysql_fetch_row($check))
-    {
-        $ready = $row[0];
-    }
+    $row = mysql_fetch_row($check);
 
-    if ($ready == 0)
+    if ($row[0] == 0)
     {
         // Doing some late checking
         // Should be done by the module but let's see what happens when
         // I do it here
 
         if($parceluuid == "")
-        {
-            $parceluuid = "00000000-0000-0000-0000-0000000000000";
-        }
+            $parceluuid = $zeroUUID;
 
         if($description == "")
-        {
             $description = "No Description";
-        }
 
         if($user == "")
-        {
             $user = "Unknown";
-        }
 
         if($original == "")
-        {
             $original = "Unknown";
-        }
 
         $insertquery = "INSERT INTO userpicks VALUES ".
             "('". mysql_escape_string($pickuuid) ."',".
@@ -345,52 +332,31 @@ function picks_update($method_name, $params, $app_data)
         // I do it here
 
         if($parceluuid == "")
-        {
-            $parceluuid = "00000000-0000-0000-0000-00000000000";
-        }
+            $parceluuid = $zeroUUID;
 
         if($description == "")
-        {
             $description = "Test";
-        }
 
         if($user == "")
-        {
             $user = "Unknown";
-        }
 
         if($original == "")
-        {
             $original = "Unknown";
-        }
 
-        $updatequery1 = "UPDATE userpicks SET ".
-            "parceluuid = '". mysql_escape_string($parceluuid) ."' WHERE ".
-            "pickuuid = '". mysql_escape_string($pickuuid) ."'";
-
-        $updatequery2 = "UPDATE userpicks SET ".
-            "name = '". mysql_escape_string($name) ."' WHERE ".
-            "pickuuid = '". mysql_escape_string($pickuuid) ."'";
-
-        $updatequery3 = "UPDATE userpicks SET ".
-            "description = '". mysql_escape_string($description) ."' WHERE ".
-            "pickuuid = '". mysql_escape_string($pickuuid) ."'";
-
-        $updatequery4 = "UPDATE userpicks SET ".
-            "snapshotuuid = '". mysql_escape_string($snapshotuuid) ."' WHERE ".
+        $updatequery1 = "UPDATE userpicks SET " .
+            "parceluuid = '". mysql_escape_string($parceluuid) . "', " .
+            "name = '". mysql_escape_string($name) . "', " .
+            "description = '". mysql_escape_string($description) . "', " .
+            "snapshotuuid = '". mysql_escape_string($snapshotuuid) . "' WHERE ".
             "pickuuid = '". mysql_escape_string($pickuuid) ."'";
 
         // Update the existing record
-        $resultQ1 = mysql_query($updatequery1);
-        $resultQ2 = mysql_query($updatequery2);
-        $resultQ3 = mysql_query($updatequery3);
-        $resultQ4 = mysql_query($updatequery4);
+        $result = mysql_query($updatequery);
     }
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
-        'data' => $data
+        'success' => $result,
+        'errorMessage' => mysql_error()
     ));
 
     print $response_xml;
@@ -411,9 +377,8 @@ function picks_delete($method_name, $params, $app_data)
             "pickuuid = '".mysql_escape_string($pickuuid) ."'");
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
-        'data' => $data
+        'success' => $result,
+        'errorMessage' => mysql_error()
     ));
 
     print $response_xml;
@@ -436,20 +401,22 @@ function avatarnotesrequest($method_name, $params, $app_data)
     $uuid           = $req['uuid'];
     $targetuuid     = $req['avatar_id'];
 
-    $result = mysql_query("SELECT * FROM usernotes WHERE ".
+    $result = mysql_query("SELECT notes FROM usernotes WHERE ".
             "useruuid = '". mysql_escape_string($uuid) ."' AND ".
             "targetuuid = '". mysql_escape_string($targetuuid) ."'");
 
-    while (($row = mysql_fetch_assoc($result)))
-    {
-        $data[] = array(
-                "targetid" => $row["targetuuid"],
-                "notes" => $row["notes"]);
-    }
+    $row = mysql_fetch_row($result);
+    if ($row == FALSE)
+        $notes = "";
+    else
+        $notes = $row[0];
+
+    $data[] = array(
+            "targetid" => $targetuuid,
+            "notes" => $notes);
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
+        'success' => True,
         'data' => $data
     ));
 
@@ -475,12 +442,9 @@ function avatar_notes_update($method_name, $params, $app_data)
             "useruuid = '". mysql_escape_string($uuid) ."' AND ".
             "targetuuid = '". mysql_escape_string($targetuuid) ."'");
 
-    while ($row = mysql_fetch_row($check))
-    {
-        $ready = $row[0];
-    }
+    $row = mysql_fetch_row($check);
 
-    if ($ready == 0)
+    if ($row[0] == 0)
     {
         // Create a new record for this avatar note
         $result = mysql_query("INSERT INTO usernotes VALUES ".
@@ -505,9 +469,7 @@ function avatar_notes_update($method_name, $params, $app_data)
     }
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
-        'data' => $data
+        'success' => True
     ));
 
     print $response_xml;
@@ -520,20 +482,48 @@ xmlrpc_server_register_method($xmlrpc_server, "avatar_properties_request",
 
 function avatar_properties_request($method_name, $params, $app_data)
 {
+    global $zeroUUID;
+
     $req            = $params[0];
 
     $uuid           = $req['avatar_id'];
 
-    $result = mysql_query("SELECT profileURL FROM userprofile WHERE ".
+    $result = mysql_query("SELECT * FROM userprofile WHERE ".
             "useruuid = '". mysql_escape_string($uuid) ."'");
+    $row = mysql_fetch_assoc($result);
 
-    while (($row = mysql_fetch_assoc($result)))
+    if ($row != FALSE)
     {
         $data[] = array(
-                "ProfileUrl" => $row["profileURL"]);
+                "ProfileUrl" => $row["profileURL"],
+
+                //Return interest data along with avatar properties
+                "wantmask"   => $row["profileWantToMask"],
+                "wanttext"   => $row["profileWantToText"],
+                "skillsmask" => $row["profileSkillsMask"],
+                "skillstext" => $row["profileSkillsText"],
+                "languages"  => $row["profileLanguages"]);
+    }
+    else
+    {
+        //Insert empty record for avatar.
+        //FIXME: Should this only be done when asking for ones own profile?
+        $sql = "INSERT INTO userprofile VALUES ( ".
+                "'". mysql_escape_string($uuid) ."', ".
+                "'$zeroUUID', 0, 0, '', 0, '', 0, '', '', '$zeroUUID', '')";
+        $result = mysql_query($sql);
+
+        $data[] = array(
+                "ProfileUrl" => "",
+                "wantmask"   => 0,
+                "wanttext"   => "",
+                "skillsmask" => 0,
+                "skillstext" => "",
+                "languages"  => "");
     }
 
     $response_xml = xmlrpc_encode(array(
+        'success' => True,
         'data' => $data
     ));
 
@@ -543,28 +533,6 @@ function avatar_properties_request($method_name, $params, $app_data)
 
 // Profile Interests
 
-xmlrpc_server_register_method($xmlrpc_server, "avatar_interests_request",
-        "avatar_interests_request");
-
-function avatar_interests_request($method_name, $params, $app_data)
-{
-    $req            = $params[0];
-
-    $uuid           = $req['avatar_id'];
-
-    while (($row = mysql_fetch_assoc($result)))
-    {
-        $data[] = array(
-                "ProfileUrl" => $row["profileURL"]);
-    }
-
-    $response_xml = xmlrpc_encode(array(
-        'data' => $data
-    ));
-
-    print $response_xml;
-}
-
 xmlrpc_server_register_method($xmlrpc_server, "avatar_interests_update",
         "avatar_interests_update");
 
@@ -573,25 +541,23 @@ function avatar_interests_update($method_name, $params, $app_data)
     $req            = $params[0];
 
     $uuid           = $req['avatar_id'];
+    $wanttext       = $req['wanttext'];
+    $wantmask       = $req['wantmask'];
     $skillstext     = $req['skillstext'];
     $skillsmask     = $req['skillsmask'];
     $languages      = $req['languages'];
-    $wanttext       = $req['wanttext'];
-    $wantmask       = $req['wantmask'];
 
     $result = mysql_query("UPDATE userprofile SET ".
-            "profileCanDoMask = ". mysql_escape_string($skillsmask) .",".
-            "profileCanDoText = '". mysql_escape_string($skillstext) ."',".
-            "profileWantDoMask = ". mysql_escape_string($wantmask) .",".
-            "profileWantDoText = '". mysql_escape_string($wanttext) ."',".
-            "profileLanguagesText = '". mysql_escape_string($languages) ."' ".
-            "where useruuid = '". mysql_escape_string($uuid) ."'"
+            "profileWantToMask = ". mysql_escape_string($wantmask) .",".
+            "profileWantToText = '". mysql_escape_string($wanttext) ."',".
+            "profileSkillsMask = ". mysql_escape_string($skillsmask) .",".
+            "profileSkillsText = '". mysql_escape_string($skillstext) ."',".
+            "profileLanguages = '". mysql_escape_string($languages) ."' ".
+            "WHERE useruuid = '". mysql_escape_string($uuid) ."'"
         );
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
-        'data' => $data
+        'success' => True
     ));
 
     print $response_xml;
@@ -620,8 +586,7 @@ function user_preferences_request($method_name, $params, $app_data)
     }
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
+        'success' => True,
         'data' => $data
     ));
 
@@ -646,8 +611,7 @@ function user_preferences_update($method_name, $params, $app_data)
             "useruuid = '". mysql_escape_string($uuid) ."'");
 
     $response_xml = xmlrpc_encode(array(
-        'success'     => True,
-        'errorMessage' => "",
+        'success' => True,
         'data' => $data
     ));
 

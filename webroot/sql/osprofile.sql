@@ -17,12 +17,11 @@ CREATE TABLE IF NOT EXISTS `classifieds` (
   PRIMARY KEY (`classifieduuid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-
 CREATE TABLE IF NOT EXISTS `usernotes` (
   `useruuid` varchar(36) NOT NULL,
   `targetuuid` varchar(36) NOT NULL,
   `notes` text NOT NULL,
-  PRIMARY KEY (`useruuid`)
+  UNIQUE KEY `useruuid` (`useruuid`,`targetuuid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `userpicks` (
@@ -57,7 +56,6 @@ CREATE TABLE IF NOT EXISTS `userprofile` (
   `profileFirstText` text NOT NULL,
   PRIMARY KEY (`useruuid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
 
 CREATE TABLE IF NOT EXISTS `usersettings` (
   `useruuid` varchar(36) NOT NULL,
