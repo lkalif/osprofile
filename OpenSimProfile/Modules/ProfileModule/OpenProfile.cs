@@ -152,7 +152,7 @@ namespace OpenSimProfile.Modules.OpenProfile
 
                 Hashtable ErrorHash = new Hashtable();
                 ErrorHash["success"] = false;
-                ErrorHash["errorMessage"] = "Unable to search at this time. ";
+                ErrorHash["errorMessage"] = "Unable to fetch profile data at this time. ";
                 ErrorHash["errorURI"] = "";
 
                 return ErrorHash;
@@ -165,7 +165,7 @@ namespace OpenSimProfile.Modules.OpenProfile
 
                 Hashtable ErrorHash = new Hashtable();
                 ErrorHash["success"] = false;
-                ErrorHash["errorMessage"] = "Unable to search at this time. ";
+                ErrorHash["errorMessage"] = "Unable to fetch profile data at this time. ";
                 ErrorHash["errorURI"] = "";
 
                 return ErrorHash;
@@ -177,7 +177,7 @@ namespace OpenSimProfile.Modules.OpenProfile
                         "Exception {3}", m_ProfileServer, method, ReqParams.ToString(), ex);
                 Hashtable ErrorHash = new Hashtable();
                 ErrorHash["success"] = false;
-                ErrorHash["errorMessage"] = "Unable to search at this time. ";
+                ErrorHash["errorMessage"] = "Unable to fetch profile data at this time. ";
                 ErrorHash["errorURI"] = "";
 
                 return ErrorHash;
@@ -186,7 +186,7 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 Hashtable ErrorHash = new Hashtable();
                 ErrorHash["success"] = false;
-                ErrorHash["errorMessage"] = "Unable to search at this time. ";
+                ErrorHash["errorMessage"] = "Unable to fetch profile data at this time. ";
                 ErrorHash["errorURI"] = "";
                 return ErrorHash;
             }
@@ -273,7 +273,6 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 remoteClient.SendAgentAlertMessage(
                         result["errorMessage"].ToString(), false);
-                return;
             }
         }
 
@@ -292,7 +291,6 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 remoteClient.SendAgentAlertMessage(
                         result["errorMessage"].ToString(), false);
-                return;
             }
         }
 
@@ -326,7 +324,7 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 foreach (Object o in dataArray)
                 {
-                        Hashtable d = (Hashtable)o;
+                    Hashtable d = (Hashtable)o;
 
                     picks[new UUID(d["pickid"].ToString())] = d["name"].ToString();
                 }
@@ -413,19 +411,16 @@ namespace OpenSimProfile.Modules.OpenProfile
 
             // Getting the global position for the Avatar
 
-            Vector3 posGlobal = new Vector3(remoteClient.Scene.RegionInfo.RegionLocX*Constants.RegionSize + avaPos.X, remoteClient.Scene.RegionInfo.RegionLocY*Constants.RegionSize + avaPos.Y, avaPos.Z);
+            Vector3 posGlobal = new Vector3(remoteClient.Scene.RegionInfo.RegionLocX*Constants.RegionSize + avaPos.X,
+                                            remoteClient.Scene.RegionInfo.RegionLocY*Constants.RegionSize + avaPos.Y,
+                                            avaPos.Z);
 
             ReqHash["pos_global"] = posGlobal.ToString();
 
             // Getting the owner of the parcel
-
-
-
-            // Getting the description of the parcel
-
+            ReqHash["user"] = "";   //FIXME: Get avatar/group who owns parcel
 
             // Do the request
-
             Hashtable result = GenericXMLRPCRequest(ReqHash,
                     "picks_update");
 
@@ -433,7 +428,6 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 remoteClient.SendAgentAlertMessage(
                         result["errorMessage"].ToString(), false);
-                return;
             }
         }
 
@@ -452,7 +446,6 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 remoteClient.SendAgentAlertMessage(
                         result["errorMessage"].ToString(), false);
-                return;
             }
         }
 
@@ -515,7 +508,6 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 remoteClient.SendAgentAlertMessage(
                         result["errorMessage"].ToString(), false);
-                return;
             }
         }
 
@@ -538,7 +530,6 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 remoteClient.SendAgentAlertMessage(
                         result["errorMessage"].ToString(), false);
-                return;
             }
         }
 
@@ -586,7 +577,6 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 remoteClient.SendAgentAlertMessage(
                         result["errorMessage"].ToString(), false);
-                return;
             }
         }
 
