@@ -97,7 +97,7 @@ namespace OpenSimProfile.Modules.OpenProfile
             foreach (Scene s in m_Scenes)
             {
                 p = s.GetScenePresence(clientID);
-                if (!p.IsChildAgent)
+                if (p != null && !p.IsChildAgent)
                     return p;
             }
             return null;
