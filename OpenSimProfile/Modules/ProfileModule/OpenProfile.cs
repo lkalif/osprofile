@@ -228,8 +228,7 @@ namespace OpenSimProfile.Modules.OpenProfile
                 classifieds[new UUID(d["classifiedid"].ToString())] = d["name"].ToString();
             }
 
-            remoteClient.SendAvatarClassifiedReply(remoteClient.AgentId,
-                        classifieds);
+            remoteClient.SendAvatarClassifiedReply(new UUID(args[0]), classifieds);
         }
 
         // Classifieds Update
@@ -330,8 +329,7 @@ namespace OpenSimProfile.Modules.OpenProfile
                 }
             }
 
-            remoteClient.SendAvatarPicksReply(remoteClient.AgentId,
-                        picks);
+            remoteClient.SendAvatarPicksReply(new UUID(args[0]), picks);
         }
 
         // Picks Request
@@ -453,6 +451,9 @@ namespace OpenSimProfile.Modules.OpenProfile
 
         public void HandleAvatarNotesRequest(Object sender, string method, List<String> args)
         {
+            string targetid;
+            string notes = "";
+
             if (!(sender is IClientAPI))
                 return;
 
@@ -479,15 +480,11 @@ namespace OpenSimProfile.Modules.OpenProfile
             {
                 Hashtable d = (Hashtable)dataArray[0];
 
-                remoteClient.SendAvatarNotesReply(
-                                new UUID(d["targetid"].ToString()),
-                                d["notes"].ToString());
-            }
-            else
-            {
-                remoteClient.SendAvatarNotesReply(
-                                new UUID(ReqHash["uuid"].ToString()),
-                                "");
+                targetid = d["targetid"].ToString();
+                if (d["notes"] != null)
+                    notes = d["notes"].ToString();
+
+                remoteClient.SendAvatarNotesReply(new UUID(targetid), notes);
             }
         }
 
