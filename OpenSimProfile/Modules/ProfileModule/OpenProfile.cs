@@ -17,7 +17,7 @@ using OpenSim.Services.Interfaces;
 using Mono.Addins;
 using OpenSim.Services.Connectors.Hypergrid;
 
-[assembly: Addin("OpenProfileModule", "0.2")]
+[assembly: Addin("OpenSimProfile", "0.3")]
 [assembly: AddinDependency("OpenSim", "0.5")]
 
 namespace OpenSimProfile.Modules.OpenProfile
@@ -71,7 +71,7 @@ namespace OpenSimProfile.Modules.OpenProfile
                 return;
             }
 
-            m_log.Info("[PROFILE] OpenProfile module is activated");
+            m_log.Info("[PROFILE] OpenSimProfile module is active");
             m_Enabled = true;
         }
 
@@ -472,6 +472,9 @@ namespace OpenSimProfile.Modules.OpenProfile
 
             if (d["description"] == null)
                 d["description"] = String.Empty;
+
+            if (d["originalname"] == null)
+                d["originalname"] = String.Empty;
 
             remoteClient.SendPickInfoReply(
                     new UUID(d["pickuuid"].ToString()),
